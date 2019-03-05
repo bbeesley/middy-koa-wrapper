@@ -58,6 +58,8 @@ const wrap = (middyware) => {
         handler.error = err;
         await onError(handler, () => {});
         handleResponse(handler, ctx);
+      } else {
+        throw err;
       }
     }
   };

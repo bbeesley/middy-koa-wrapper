@@ -20,6 +20,9 @@ const mapCtxToHandler = ctx => ({
  * @param {Object} ctx The Koa context object
  */
 const handleResponse = ({ response = {} }, ctx) => {
+  if (response.statusCode >= 400) {
+    ctx.throw(response.statusCode, response.body);
+  }
   if (response.statusCode) {
     ctx.status = response.statusCode;
   }

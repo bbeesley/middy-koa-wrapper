@@ -24,7 +24,7 @@ const handleResponse = ({ response = {} }, ctx) => {
     ctx.status = response.statusCode;
   }
   if (response.body) {
-    ctx.status = response.body;
+    ctx.body = response.body;
   }
 };
 

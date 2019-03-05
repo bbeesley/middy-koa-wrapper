@@ -1,14 +1,4 @@
 /**
- * Maps the lambda handler response props into the koa ctx positions
- * @param {Object} handler The temporary lambda handler object
- * @returns {Object}  An object to assign onto ctx
- */
-const mapResponseToCtx = handler => ({
-  status: handler.response.statusCode,
-  body: handler.response.body,
-});
-
-/**
  * Creates a temporary handler object to use in middy middleware
  * @param {Object} ctx The Koa context object
  * @returns {Object}  A Lambda style handler object
@@ -29,9 +19,12 @@ const mapCtxToHandler = ctx => ({
  * @param {Object} handler The temporary lamnda handler object
  * @param {Object} ctx The Koa context object
  */
-const handleResponse = (handler, ctx) => {
-  if (handler.response) {
-    Object.assign(ctx, mapResponseToCtx(handler));
+const handleResponse = ({ response = {} }, ctx) => {
+  if (response.statusCode) {
+    ctx.status = response.statusCode;
+  }
+  if (response.body) {
+    ctx.status = response.body;
   }
 };
 

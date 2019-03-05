@@ -1,6 +1,6 @@
 {
   "name": "middy-koa-wrapper",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Wrap middy middleware to use with koa",
   "main": "src/main/index.js",
   "scripts": {

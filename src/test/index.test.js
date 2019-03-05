@@ -33,6 +33,24 @@ describe('wrap', () => {
       });
       expect(__mocks.after).toHaveBeenCalled();
     });
+    it('calls the onError hook if theres an error', async () => {
+      const wrapped = wrap(middyware());
+      const error = new Error();
+      await wrapped(ctx, async () => {
+        expect(__mocks.onError).not.toHaveBeenCalled();
+        throw error;
+      });
+      expect(__mocks.onError).toHaveBeenCalledWith({
+        event: {
+          path: ctx.path,
+          headers: ctx.headers,
+          httpMethod: ctx.method,
+          queryStringParameters: ctx.query,
+          data: ctx.request.body,
+        },
+        error,
+      });
+    });
     it('gets passed a fake event', async () => {
       const wrapped = wrap(middyware());
       await wrapped(ctx, async () => {});

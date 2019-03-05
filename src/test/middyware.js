@@ -2,6 +2,7 @@
 const __mocks = {
   before: jest.fn(),
   after: jest.fn(),
+  onError: jest.fn(),
 };
 
 const middyware = () => ({
@@ -11,6 +12,10 @@ const middyware = () => ({
   },
   after: (handler, next) => {
     __mocks.after(handler);
+    return next();
+  },
+  onError: (handler, next) => {
+    __mocks.onError(handler);
     return next();
   },
 });

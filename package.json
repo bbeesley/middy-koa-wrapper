@@ -1,0 +1,32 @@
+{
+  "name": "middy-koa-wrapper",
+  "version": "1.0.0",
+  "description": "Wrap middy middleware to use with koa",
+  "main": "src/main/index.js",
+  "scripts": {
+    "pretest": "eslint src/**",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbeesley/middy-koa-wrapper.git"
+  },
+  "keywords": [
+    "koa",
+    "middy",
+    "middleware"
+  ],
+  "author": "Bill Beesley <bbeesley@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bbeesley/middy-koa-wrapper/issues"
+  },
+  "homepage": "https://github.com/bbeesley/middy-koa-wrapper#readme",
+  "devDependencies": {
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jest": "^22.3.0",
+    "jest": "^24.1.0"
+  }
+}

@@ -3,7 +3,7 @@
  * @param {Object} ctx The Koa context object
  * @returns {Object}  A Lambda style handler object
  */
-const mapCtxToHandler = ctx => ({
+const mapCtxToHandler = (ctx, transferResponse) => ({
   event: {
     path: ctx.path,
     headers: ctx.headers,
@@ -11,7 +11,10 @@ const mapCtxToHandler = ctx => ({
     queryStringParameters: ctx.query,
     data: (ctx.is('json')) ? JSON.parse(ctx.request.body) : ctx.request.body,
   },
-  response: (ctx.body || ctx.status) ? { statusCode: ctx.status, body: ctx.body } : undefined,
+  response: (transferResponse && (ctx.body || ctx.status)) ? {
+    statusCode: ctx.status,
+    body: ctx.body,
+  } : undefined,
 });
 
 /**
@@ -51,13 +54,13 @@ const wrap = (middyware) => {
         await next();
       }
       if (after) {
-        const handler = mapCtxToHandler(ctx);
+        const handler = mapCtxToHandler(ctx, true);
         await after(handler, () => {});
         handleResponse(handler, ctx);
       }
     } catch (err) {
       if (onError) {
-        const handler = mapCtxToHandler(ctx);
+        const handler = mapCtxToHandler(ctx, true);
         handler.error = err;
         await onError(handler, () => {});
         handleResponse(handler, ctx);

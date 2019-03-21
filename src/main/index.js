@@ -9,12 +9,16 @@ const mapCtxToHandler = (ctx, transferResponse) => ({
     headers: ctx.headers,
     httpMethod: ctx.method,
     queryStringParameters: ctx.query,
-    data: (ctx.is('json')) ? JSON.parse(ctx.request.body) : ctx.request.body,
+    data: ctx.is('json') ? JSON.parse(ctx.request.body) : ctx.request.body,
+    inputSchema: ctx.inputSchema
   },
-  response: (transferResponse && (ctx.body || ctx.status)) ? {
-    statusCode: ctx.status,
-    body: ctx.body,
-  } : undefined,
+  response:
+    transferResponse && (ctx.body || ctx.status)
+      ? {
+          statusCode: ctx.status,
+          body: ctx.body
+        }
+      : undefined
 });
 
 /**
@@ -42,7 +46,7 @@ const handleResponse = ({ response = {} }, ctx) => {
  * @param {Function} [middyware.onError] The middy onError hook
  * @returns {Object}  async koa middleware object
  */
-const wrap = (middyware) => {
+const wrap = middyware => {
   const { before, after, onError } = middyware;
   return async (ctx, next) => {
     try {

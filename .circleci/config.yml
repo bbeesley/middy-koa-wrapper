@@ -60,7 +60,7 @@ jobs:
           command: mkdir -p ~/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
       - run:
           name: Publish package
-          command: npx semantic-release@15.9.x --debug --repository-url https://github.com/bbeesley/middy-koa-wrapper.git/
+          command: npm run release
 
 workflows:
   version: 2

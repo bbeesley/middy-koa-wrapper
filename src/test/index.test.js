@@ -18,6 +18,10 @@ describe('wrap', () => {
     const res = wrap(middyware);
     expect(res).toBeInstanceOf(Function);
   });
+  it('correctly names the returned middleware', () => {
+    const res = wrap(middyware);
+    expect(res.name).toEqual('middyware');
+  });
   describe('wrapped middleware', () => {
     it('calls the before hook', async () => {
       const wrapped = wrap(middyware());

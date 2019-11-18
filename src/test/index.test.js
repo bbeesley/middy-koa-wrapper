@@ -70,9 +70,10 @@ describe('wrap', () => {
     });
     it('gets a parsed body if content type is json', async () => {
       const wrapped = wrap(middyware());
-      const context = Object.assign({}, ctx, {
+      const context = {
+        ...ctx,
         is: () => 'json',
-      });
+      };
       await wrapped(context, async () => {});
       expect(__mocks.before).toBeCalledWith({
         event: {

@@ -48,7 +48,7 @@ const handleResponse = ({ response = {} }, ctx) => {
  */
 const wrap = (middyware) => {
   const { before, after, onError } = middyware;
-  return async (ctx, next) => {
+  const middleware = async (ctx, next) => {
     try {
       if (before) {
         const handler = mapCtxToHandler(ctx);
@@ -73,6 +73,8 @@ const wrap = (middyware) => {
       }
     }
   };
+  Object.defineProperty(middleware, 'name', { value: middyware.name });
+  return middleware;
 };
 
 module.exports = wrap;

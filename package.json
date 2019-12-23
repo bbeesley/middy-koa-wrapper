@@ -37,7 +37,7 @@
     "@semantic-release/npm": "^5.3.4",
     "@semantic-release/release-notes-generator": "^7.3.3",
     "conventional-changelog-angular": "^5.0.6",
-    "conventional-commit-types": "^2.3.0",
+    "conventional-commit-types": "^3.0.0",
     "cz-conventional-changelog": "^3.0.2",
     "documentation": "^12.1.4",
     "eslint": "^6.6.0",

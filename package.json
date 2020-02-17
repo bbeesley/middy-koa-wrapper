@@ -47,7 +47,7 @@
     "husky": "^4.0.7",
     "jest": "^25.1.0",
     "npm-check-updates": "^4.0.1",
-    "semantic-release": "^16.0.3"
+    "semantic-release": "^17.0.3"
   },
   "config": {
     "commitizen": {

@@ -39,7 +39,7 @@
     "conventional-changelog-angular": "^5.0.6",
     "conventional-commit-types": "^3.0.0",
     "cz-conventional-changelog": "^3.0.2",
-    "documentation": "^12.1.4",
+    "documentation": "^13.0.0",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",

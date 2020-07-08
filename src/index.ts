@@ -13,6 +13,7 @@ export interface Context extends KoaContext {
 
 /**
  * Creates a temporary handler object to use in middy middleware
+ * @private
  * @param {Object} ctx The Koa context object
  * @returns {Object}  A Lambda style handler object
  */
@@ -100,6 +101,7 @@ const mapCtxToHandler = (
 
 /**
  * If handler.response has been set, we copy those props onto ctx
+ * @private
  * @param {Object} handler The temporary lamnda handler object
  * @param {Object} ctx The Koa context object
  */
@@ -134,7 +136,7 @@ const handleResponse = (
  * @param {Function} [middyware.onError] The middy onError hook
  * @returns {Object}  async koa middleware object
  */
-function wrap(
+export default function wrap(
   middyware: MiddlewareObject<any, any, LambdaContext>,
   name: string = 'middyware'
 ): Middleware {
@@ -168,5 +170,3 @@ function wrap(
   Object.defineProperty(middleware, 'name', { value: name });
   return middleware;
 }
-
-export default wrap;

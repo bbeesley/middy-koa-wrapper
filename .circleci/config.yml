@@ -59,6 +59,12 @@ jobs:
           name: Discable strict ssh key checking
           command: mkdir -p ~/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
       - run:
+          name: Compile package
+          command: npm run compile
+      - run:
+          name: Update docs
+          command: npm run documentation
+      - run:
           name: Publish package
           command: npm run release
 

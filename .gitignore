@@ -16,6 +16,10 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+coverage-*
+
+# Mutation reports
+reports
 
 # nyc test coverage
 .nyc_output
@@ -59,3 +63,20 @@ typings/
 
 # next.js build output
 .next
+
+# MacOS finder is great
+.DS_Store
+
+# serverless temp files
+.serverless
+
+# terraform temp files
+.terraform
+*.plan
+
+.webpackCache
+dist
+.yo-repository
+
+# Editor config
+.vscode/

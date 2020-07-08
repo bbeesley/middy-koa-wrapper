@@ -10,3 +10,5 @@ const wrap = require('middy-koa-wrapper');
 
 app.use(wrap(eventNormaliser()));
 ```
+
+## API

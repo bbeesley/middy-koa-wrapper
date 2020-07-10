@@ -35,7 +35,7 @@ app.use(wrap(eventNormaliser()));
 
 ### wrap
 
-[src/index.ts:139-172](https://github.com/bbeesley/middy-koa-wrapper/blob/efd6111033a7d22281351296d405dde0d550d858/src/index.ts#L139-L172 "Source code on GitHub")
+[src/index.ts:139-172](https://github.com/bbeesley/middy-koa-wrapper/blob/779dc0f6195f0498dfd5384b25116eb1dc4a3763/src/index.ts#L139-L172 "Source code on GitHub")
 
 Main wrapper fn to convert middy middleware to koa middleware
 

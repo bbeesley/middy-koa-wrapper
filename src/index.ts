@@ -117,14 +117,14 @@ const handleResponse = (
   },
   ctx: Context
 ) => {
-  if (response.statusCode >= 400) {
-    ctx.throw(response.statusCode, response.body);
-  }
   if (response.statusCode) {
     ctx.status = response.statusCode;
   }
   if (response.body) {
     ctx.body = response.body;
+  }
+  if (response.statusCode >= 400) {
+    ctx.throw(response.statusCode, response.body);
   }
 };
 

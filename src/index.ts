@@ -1,14 +1,23 @@
-import { MiddlewareObject } from 'middy';
-import type { Middleware, Context as KoaContext, Next } from 'koa';
+import type { MiddlewareObject } from 'middy';
+import type { IncomingMessage } from 'http';
+import type {
+  Middleware,
+  Next,
+  Request,
+  DefaultContext,
+  ParameterizedContext,
+  DefaultState,
+} from 'koa';
 import type {
   Context as LambdaContext,
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
 } from 'aws-lambda';
 
-export interface Context extends KoaContext {
-  request: KoaContext['request'] & { body: string };
-  req: KoaContext['req'] & { body: string };
+export interface Context
+  extends ParameterizedContext<DefaultState, DefaultContext, string> {
+  request: Request & { body?: string };
+  req: IncomingMessage & { body?: string };
 }
 
 /**
@@ -28,7 +37,10 @@ const mapCtxToHandler = (
 } => ({
   event: {
     path: ctx.path,
-    headers: ctx.headers,
+    headers: Object.entries(ctx.headers).reduce(
+      (acc, [k, v]) => ({ ...acc, [k]: Array.isArray(v) ? v[0] : v }),
+      {}
+    ),
     multiValueHeaders: (Object.entries(ctx.headers) as [
       string,
       string
@@ -38,10 +50,15 @@ const mapCtxToHandler = (
       string
     ][]).reduce((acc, [key, value]) => ({ ...acc, [key]: [value] }), {}),
     httpMethod: ctx.method,
-    queryStringParameters: ctx.query,
-    data: ctx.is('json') ? JSON.parse(ctx.request.body) : ctx.request.body,
+    queryStringParameters: Object.entries(ctx.query).reduce(
+      (acc, [k, v]) => ({ ...acc, [k]: Array.isArray(v) ? v[0] : v }),
+      {}
+    ),
+    data: ctx.is('json')
+      ? JSON.parse(ctx.request.body ?? '{}')
+      : ctx.request.body,
     inputSchema: ctx.inputSchema,
-    body: ctx.req.body,
+    body: ctx.req.body ?? null,
     isBase64Encoded: false,
     pathParameters: { proxy: ctx.path },
     stageVariables: {},
@@ -95,7 +112,7 @@ const mapCtxToHandler = (
   callback: () => {},
   response: {
     statusCode: ctx.status,
-    body: ctx.body,
+    body: ctx.body ?? '',
   },
 });
 

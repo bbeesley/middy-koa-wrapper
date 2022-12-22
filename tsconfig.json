@@ -1,18 +1,10 @@
 {
+  "extends": "@beesley/tsconfig/npm-cjs.json",
   "compilerOptions": {
-    "declaration": true,
-    "esModuleInterop": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "lib": ["ESNext"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "target": "ESNext",
-    "outDir": "./dist/",
-    "preserveConstEnums": true,
-    "resolveJsonModule": true
+    "types": ["node"],
+    "declarationDir": "dist",
+    "exactOptionalPropertyTypes": false,
+    "esModuleInterop": true
   },
   "include": ["src/*.ts", "src/**/*.ts", "*.d.ts"],
   "exclude": ["**/__mocks__/*", "src/**/*.test.*", "node_modules/*"]

@@ -3,8 +3,17 @@ module.exports = {
   extends: [
     'airbnb-typescript/base',
     'plugin:prettier/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
   plugins: ['jest'],
+  settings: {
+    'import/resolver': {
+      typescript: true,
+      node: true
+    },
+    'import/ignore': ['koa', 'aws-lambda'],
+  },
   parserOptions: {
     project: ['./tsconfig.json', './tsconfig.test.json'],
     tsconfigRootDir: __dirname,

@@ -1,8 +1,8 @@
 import { MiddlewareObject } from 'middy';
-import { Middleware, Context as KoaContext, Next } from 'koa';
-import {
+import type { Middleware, Context as KoaContext, Next } from 'koa';
+import type {
   Context as LambdaContext,
-  APIGatewayEvent,
+  APIGatewayProxyEvent,
   APIGatewayProxyResult,
 } from 'aws-lambda';
 
@@ -20,7 +20,7 @@ export interface Context extends KoaContext {
 const mapCtxToHandler = (
   ctx: Context
 ): {
-  event: APIGatewayEvent & Record<string, any>;
+  event: APIGatewayProxyEvent & Record<string, any>;
   response: APIGatewayProxyResult;
   context: LambdaContext;
   error: any;
@@ -109,7 +109,7 @@ const handleResponse = (
   {
     response = {},
   }: {
-    event: APIGatewayEvent & Record<string, any>;
+    event: APIGatewayProxyEvent & Record<string, any>;
     response?: APIGatewayProxyResult | Record<string, any>;
     context: LambdaContext;
     error: any;

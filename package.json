@@ -3,7 +3,7 @@
   "version": "2.0.1",
   "description": "Wrap middy middleware to use with koa",
   "engines": {
-    "node": ">=12.13.0"
+    "node": ">=16.15.0"
   },
   "scripts": {
     "dependabump": "ncu -u && rm -rf package-lock.json node_modules | true && npm i",

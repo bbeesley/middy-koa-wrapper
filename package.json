@@ -1,6 +1,6 @@
 {
   "name": "middy-koa-wrapper",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Wrap middy middleware to use with koa",
   "engines": {
     "node": ">=16.15.0"

@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/bbeesley/middy-koa-wrapper/compare/v2.0.1...v2.1.0) (2022-12-22)
+
+
+### Features
+
+* add support for es module compiles ([f245ba8](https://github.com/bbeesley/middy-koa-wrapper/commit/f245ba871efdb1d325708edff92e9953ea524095))
+
 ## [2.0.1](https://github.com/bbeesley/middy-koa-wrapper/compare/v2.0.0...v2.0.1) (2020-07-10)
 
 

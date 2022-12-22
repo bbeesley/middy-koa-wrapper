@@ -5,17 +5,33 @@
   "engines": {
     "node": ">=16.15.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/index.cjs",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "dependabump": "ncu -u && rm -rf package-lock.json node_modules | true && npm i",
     "documentation": "documentation readme src/index.ts --github --readme-file=./README.md --require-extension=ts --parse-extension=ts --babel=./babel.config.js --section=API",
-    "lint": "eslint --ext '.ts' src/",
+    "lint": "xo",
     "pretest": "npm run lint",
     "test": "jest --coverage --verbose --passWithNoTests",
     "posttest": "npm run compile",
     "prepare": "npm run compile",
     "precompile": "rm -rf dist",
     "release": "semantic-release",
-    "compile": "BABEL_ENV=production babel src --out-dir dist --source-maps --extensions \".ts\" --ignore \"**/*.test.ts\" && tsc --emitDeclarationOnly",
+    "compile:esm": "tsc -p tsconfig.json",
+    "compile:cjs": "babel src --out-dir dist/cjs --extensions '.ts,.cjs,.mjs' --ignore '**/*.test.ts' --source-maps --out-file-extension '.cjs'",
+    "compile": "run-p compile:*",
     "commitlint": "commitlint --from master"
   },
   "repository": {
@@ -28,8 +44,6 @@
     "url": "https://github.com/bbeesley/middy-koa-wrapper/issues"
   },
   "homepage": "https://github.com/bbeesley/middy-koa-wrapper#readme",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "src"
@@ -43,6 +57,42 @@
     "hooks": {
       "pre-commit": "npm test",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "xo": {
+    "space": true,
+    "prettier": true,
+    "overrides": [
+      {
+        "files": [
+          "**/*.test.js"
+        ],
+        "envs": [
+          "jest"
+        ],
+        "rules": {
+          "import/no-extraneous-dependencies": "off",
+          "@typescript-eslint/naming-convention": "off",
+          "unicorn/prevent-abbreviations": "off"
+        }
+      }
+    ],
+    "envs": [
+      "node"
+    ],
+    "rules": {
+      "func-names": [
+        "error",
+        "always"
+      ],
+      "no-await-in-loop": "off",
+      "@typescript-eslint/no-implicit-any-catch": "off",
+      "unicorn/no-array-reduce": "off",
+      "import/extensions": "off",
+      "n/prefer-global/process": "off",
+      "n/file-extension-in-import": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "unicorn/no-process-exit": "off"
     }
   },
   "release": {
@@ -105,26 +155,23 @@
     "@types/aws-lambda": "^8.10.58",
     "@types/jest": "^29.2.4",
     "@types/koa": "^2.13.5",
-    "@typescript-eslint/eslint-plugin": "^5.47.0",
-    "@typescript-eslint/parser": "^5.47.0",
+    "@types/node": "^18.11.17",
     "babel-jest": "^29.3.1",
+    "babel-plugin-replace-import-extension": "^1.1.3",
     "conventional-changelog-angular": "^5.0.10",
     "cz-conventional-changelog": "^3.2.0",
     "documentation": "^14.0.1",
-    "eslint": "^8.30.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-import-resolver-typescript": "^3.5.2",
-    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^27.1.7",
-    "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.2",
     "jest": "^29.3.1",
+    "joi": "^17.7.0",
     "koa-bodyparser": "^4.3.0",
     "middy": "^0.36.0",
     "npm-check-updates": "^16.6.2",
-    "prettier": "^2.0.5",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.1",
     "semantic-release": "^19.0.5",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "xo": "^0.53.1"
   }
 }

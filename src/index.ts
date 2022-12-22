@@ -1,5 +1,6 @@
+import type { IncomingMessage } from 'node:http';
+import type { Schema } from 'joi';
 import type { MiddlewareObject } from 'middy';
-import type { IncomingMessage } from 'http';
 import type {
   Middleware,
   Next,
@@ -14,11 +15,11 @@ import type {
   APIGatewayProxyResult,
 } from 'aws-lambda';
 
-export interface Context
-  extends ParameterizedContext<DefaultState, DefaultContext, string> {
+export type Context = {
   request: Request & { body?: string };
   req: IncomingMessage & { body?: string };
-}
+  inputSchema?: Schema;
+} & ParameterizedContext<DefaultState, DefaultContext, string>;
 
 /**
  * Creates a temporary handler object to use in middy middleware
@@ -27,7 +28,7 @@ export interface Context
  * @returns {Object}  A Lambda style handler object
  */
 const mapCtxToHandler = (
-  ctx: Context
+  ctx: Context,
 ): {
   event: APIGatewayProxyEvent & Record<string, any>;
   response: APIGatewayProxyResult;
@@ -37,26 +38,32 @@ const mapCtxToHandler = (
 } => ({
   event: {
     path: ctx.path,
-    headers: Object.entries(ctx.headers).reduce(
-      (acc, [k, v]) => ({ ...acc, [k]: Array.isArray(v) ? v[0] : v }),
-      {}
+    headers: Object.fromEntries(
+      Object.entries(ctx.headers).map(([k, v]) => [
+        k,
+        Array.isArray(v) ? v[0] : v,
+      ]),
     ),
-    multiValueHeaders: (Object.entries(ctx.headers) as [
-      string,
-      string
-    ][]).reduce((acc, [key, value]) => ({ ...acc, [key]: [value] }), {}),
-    multiValueQueryStringParameters: (Object.entries(ctx.query) as [
-      string,
-      string
-    ][]).reduce((acc, [key, value]) => ({ ...acc, [key]: [value] }), {}),
+    multiValueHeaders: Object.fromEntries(
+      (Object.entries(ctx.headers) as Array<[string, string]>).map(
+        ([key, value]) => [key, [value]],
+      ),
+    ),
+    multiValueQueryStringParameters: Object.fromEntries(
+      (Object.entries(ctx.query) as Array<[string, string]>).map(
+        ([key, value]) => [key, [value]],
+      ),
+    ),
     httpMethod: ctx.method,
-    queryStringParameters: Object.entries(ctx.query).reduce(
-      (acc, [k, v]) => ({ ...acc, [k]: Array.isArray(v) ? v[0] : v }),
-      {}
+    queryStringParameters: Object.fromEntries(
+      Object.entries(ctx.query).map(([k, v]) => [
+        k,
+        Array.isArray(v) ? v[0] : v,
+      ]),
     ),
-    data: ctx.is('json')
+    data: (ctx.is('json')
       ? JSON.parse(ctx.request.body ?? '{}')
-      : ctx.request.body,
+      : ctx.request.body) as Record<string, any>,
     inputSchema: ctx.inputSchema,
     body: ctx.req.body ?? null,
     isBase64Encoded: false,
@@ -65,12 +72,12 @@ const mapCtxToHandler = (
     resource: '',
     requestContext: {
       authorizer: {},
-      accountId: process.env.AWS_PROFILE || '',
-      apiId: process.env.npm_package_name || '',
+      accountId: process.env.AWS_PROFILE ?? '',
+      apiId: process.env.npm_package_name ?? '',
       protocol: ctx.protocol,
-      resourceId: process.env.npm_package_name || '',
+      resourceId: process.env.npm_package_name ?? '',
       httpMethod: ctx.method,
-      stage: process.env.STAGE || 'prod',
+      stage: process.env.STAGE ?? 'prod',
       requestId: ctx.get('x-correlation-id'),
       requestTime: new Date().toISOString(),
       requestTimeEpoch: Date.now(),
@@ -97,19 +104,19 @@ const mapCtxToHandler = (
   context: {
     callbackWaitsForEmptyEventLoop: true,
     functionVersion: '$LATEST',
-    functionName: process.env.npm_package_name || '',
-    memoryLimitInMB: '1024',
-    logGroupName: `/aws/lambda/${process.env.npm_package_name}`,
+    functionName: process.env.npm_package_name ?? '',
+    memoryLimitInMB: '1024', // eslint-disable-line @typescript-eslint/naming-convention
+    logGroupName: `/aws/lambda/${process.env.npm_package_name ?? ''}`,
     logStreamName: '',
     invokedFunctionArn: '',
     awsRequestId: ctx.get('x-correlation-id'),
     getRemainingTimeInMillis: () => Date.now(),
-    done: () => {},
-    fail: () => {},
-    succeed: () => {},
+    done() {},
+    fail() {},
+    succeed() {},
   },
   error: {},
-  callback: () => {},
+  callback() {},
   response: {
     statusCode: ctx.status,
     body: ctx.body ?? '',
@@ -124,22 +131,27 @@ const mapCtxToHandler = (
  */
 const handleResponse = (
   {
-    response = {},
+    response = {
+      statusCode: 0,
+      body: '{}',
+    },
   }: {
     event: APIGatewayProxyEvent & Record<string, any>;
-    response?: APIGatewayProxyResult | Record<string, any>;
+    response?: APIGatewayProxyResult;
     context: LambdaContext;
     error: any;
     callback: any;
   },
-  ctx: Context
+  ctx: Context,
 ) => {
   if (response.statusCode) {
     ctx.status = response.statusCode;
   }
+
   if (response.body) {
     ctx.body = response.body;
   }
+
   if (response.statusCode >= 400) {
     ctx.throw(response.statusCode, response.body);
   }
@@ -154,9 +166,9 @@ const handleResponse = (
  * @returns {Object}  async koa middleware object
  */
 export default function wrap(
-  middyware: MiddlewareObject<any, any, LambdaContext>,
-  name: string = 'middyware'
-): Middleware {
+  middyware: MiddlewareObject<any, any>,
+  name = 'middyware',
+): Middleware<DefaultState, DefaultContext & { inputSchema?: Schema }> {
   const { before, after, onError } = middyware;
   const middleware = async (ctx: Context, next: Next) => {
     try {
@@ -168,22 +180,24 @@ export default function wrap(
       } else {
         await next();
       }
+
       if (after) {
         const handler = mapCtxToHandler(ctx);
         await after(handler, () => {});
         handleResponse(handler, ctx);
       }
-    } catch (err) {
+    } catch (error) {
       if (onError) {
         const handler = mapCtxToHandler(ctx);
-        handler.error = err;
+        handler.error = error;
         await onError(handler, () => {});
         handleResponse(handler, ctx);
       } else {
-        throw err;
+        throw error;
       }
     }
   };
+
   Object.defineProperty(middleware, 'name', { value: name });
   return middleware;
 }

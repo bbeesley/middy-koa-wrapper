@@ -16,7 +16,6 @@ const ctx = {
   get: (arg) => arg,
 };
 
-/* eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle */
 const __mocks = {
   before: jest.fn(),
   after: jest.fn(),
@@ -24,15 +23,15 @@ const __mocks = {
 };
 
 const middyware = () => ({
-  before: (handler, next) => {
+  before(handler, next) {
     __mocks.before(handler);
     return next();
   },
-  after: (handler, next) => {
+  after(handler, next) {
     __mocks.after(handler);
     return next();
   },
-  onError: (handler, next) => {
+  onError(handler, next) {
     __mocks.onError(handler);
     return next();
   },
@@ -64,7 +63,7 @@ describe('wrap', () => {
     });
     it('calls the onError hook if theres an error', async () => {
       const wrapped = wrap(middyware());
-      const error = new Error();
+      const error = new Error('test error');
       await wrapped(ctx, async () => {
         expect(__mocks.onError).not.toHaveBeenCalled();
         throw error;
@@ -79,7 +78,7 @@ describe('wrap', () => {
             data: ctx.request.body,
           }),
           error,
-        })
+        }),
       );
     });
     it('gets passed a fake event', async () => {
@@ -94,7 +93,7 @@ describe('wrap', () => {
             queryStringParameters: ctx.query,
             data: ctx.request.body,
           }),
-        })
+        }),
       );
     });
     it('gets a parsed body if content type is json', async () => {
@@ -113,7 +112,7 @@ describe('wrap', () => {
             queryStringParameters: ctx.query,
             data: { body: 'foo' },
           }),
-        })
+        }),
       );
     });
   });
